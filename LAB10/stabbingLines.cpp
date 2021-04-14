@@ -3,11 +3,13 @@
 #include <cmath>
 #include <cstdlib>
 #include <fstream>
+#include <stabbingLines.h>
 
 #define MAXARRAYSIZE 500
 using namespace std;
 typedef int PointId;
 typedef int LineId;
+char comma;
 
 struct Point
 {                //define a Point struct
@@ -24,18 +26,14 @@ struct Line
 };
 
 void readPoints(ifstream &inPutPointFile, Point pointsArray[],
-                const int MaxPntsSize, int &numPoints);
-
-int main()
+                const int MaxPntsSize, int &numPoints)
 {
-
-    char filename[50] = "points.txt";
     ifstream input("points.txt");
     int x, y;
     int count = 0;
-    char comma;
+
     PointId pid;
-    Point pointsArray[100];
+    pointsArray[MaxPntsSize];
     int counts = 0;
 
     while (input >> pid >> comma >> x >> comma >> y)
@@ -58,15 +56,17 @@ int main()
 
         cout << pointsArray[i].Pid << " " << pointsArray[i].x << " " << pointsArray[i].y << endl;
     }
-
+};
+void readLines(ifstream &inPutLineFile, Line LinesArray[],
+               const int MaxLnsSize, int &numLines)
+{
     ifstream lineinput("lines.txt");
     PointId P1, P2;
-    count = 0;
+    int count = 0;
 
     LineId lid;
-    Line LinesArray[100];
 
-    counts = 0;
+    int counts = 0;
 
     while (lineinput >> lid >> comma >> P1 >> comma >> P2)
     {
@@ -80,19 +80,31 @@ int main()
     }
     cout << "LineID"
          << " "
-         << "First Point"
+         << "FirstPoint"
          << " "
-         << "Second Point" << endl;
-    for (int i = 0; i < 5; ++i)
+         << "SecondPoint" << endl;
+    for (int i = 0; i < MaxLnsSize; ++i)
     {
 
         cout << LinesArray[i].Lid << " " << LinesArray[i].p1 << " " << LinesArray[i].p2 << endl;
     }
-    cout << " " << endl;
+}
+void printLineByCoords(LineId lid, Line LinesArray[], const int MaxLnsSize, Point pointsArray[], const int MaxPntsSize)
+{
+    cout << "LineID"
+         << " "
+         << "FirstPoint"
+         << " "
+         << "SecondPoint" << endl;
+    for (int i = 0; i < MaxLnsSize; ++i)
+    {
+
+        cout << LinesArray[i].Lid << " " << LinesArray[i].p1 << " " << LinesArray[i].p2 << endl;
+    }
     Line countn;
     Point p1;
     Point p2;
-    countn.Lid = 4;
+    countn.Lid = lid;
     for (int i = 0; i < 5; ++i)
     {
 
@@ -132,7 +144,11 @@ int main()
     cout << endl;
     cout << "(Second Point)" << endl;
     cout << "(" << p2.x << "," << p2.y << ")" << endl;
-
+}
+void getStabbedLines(const int xcoord, Line linesArray[], const int MaxLnsSize, const int NumLines, Point pointsArray[],
+                     const int MaxPtsSize, Line stabbedLines[],
+                     const int MaxStbSize, int &NumOfStbLines)
+{
     struct SLine
     {
         LineId Lid; // Line Id
@@ -141,15 +157,15 @@ int main()
     };
     SLine StabbedLines[10];
     SLine stabline;
-    counts = 0;
+    int counts = 0;
     for (int i = 0; i < 5; ++i)
     {
         stabline.Lid = counts;
 
-        if (stabline.Lid == LinesArray[i].Lid)
+        if (stabline.Lid == linesArray[i].Lid)
         {
-            stabline.p1.Pid = LinesArray[i].p1;
-            stabline.p2.Pid = LinesArray[i].p2;
+            stabline.p1.Pid = linesArray[i].p1;
+            stabline.p2.Pid = linesArray[i].p2;
         }
 
         StabbedLines[counts] = stabline;
@@ -157,9 +173,9 @@ int main()
         ++counts;
         cout << endl;
     }
-    for (int y = 0; y < 5; ++y)
+    for (int y = 0; y < NumLines; ++y)
     {
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < MaxPtsSize; ++i)
         {
 
             if (StabbedLines[y].p1.Pid == pointsArray[i].Pid)
@@ -186,17 +202,17 @@ int main()
         cout << "(" << StabbedLines[y].p2.x << "," << StabbedLines[y].p2.y << ")" << endl;
     }
     cout << endl;
-    int C = 4;
-    cout << " These lines were stabbed by x="
-         << " " << C << endl;
 
-    for (int i = 0; i < 5; ++i)
+    cout << " These lines were stabbed by x="
+         << " " << xcoord << endl;
+
+    for (int i = 0; i < NumLines; ++i)
     {
-        if (StabbedLines[i].p1.x >= C || StabbedLines[i].p2.x >= C)
+        if (StabbedLines[i].p1.x >= xcoord || StabbedLines[i].p2.x >= xcoord)
         {
 
             cout << "Line"
                  << " " << StabbedLines[i].Lid << endl;
         }
     }
-}
+};
