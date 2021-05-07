@@ -17,6 +17,18 @@ public:         // Access specifier
 
 vector<rectBlocks> rectangleBlocks;
 
+class sqrBaseRectBlocks: public rectBlocks{
+    public:
+    int W=H;
+    
+    };
+
+class cuboidBlocks: public sqrBaseRectBlocks{
+public:
+	int W=H=L;
+};
+
+
 int main()
 {
 
